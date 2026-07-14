@@ -1,3 +1,4 @@
+import { useAuthActions } from "@convex-dev/auth/react";
 import { useState } from "react";
 import {
   Card,
@@ -18,8 +19,14 @@ interface SignInCardProps {
 }
 
 const SignInCard = ({ setAuthFlow }: SignInCardProps) => {
+  const { signIn } = useAuthActions();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+
+  const handleOAuthSignIn = async (provider: "google" | "github") => {
+    signIn(provider);
+  };
+
   return (
     <Card className="w-full h-full p-8">
       <CardHeader className="px-0 pt-0">
@@ -68,6 +75,7 @@ const SignInCard = ({ setAuthFlow }: SignInCardProps) => {
             size="lg"
             disabled={false}
             variant="outline"
+            onClick={() => handleOAuthSignIn("github")}
           >
             <FaGithub className="size-5 absolute left-2.5 top-2.5" />
             Continue with Github
