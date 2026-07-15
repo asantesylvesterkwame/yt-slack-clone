@@ -65,6 +65,7 @@ const SignInCard = ({ setAuthFlow }: SignInCardProps) => {
             size="lg"
             disabled={false}
             variant="outline"
+            onClick={() => handleOAuthSignIn("google")}
           >
             <FcGoogle className="size-5 absolute left-2.5 top-2.5" />
             Continue with Google
