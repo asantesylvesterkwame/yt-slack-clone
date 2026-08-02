@@ -13,6 +13,7 @@ import { Separator } from "@/components/ui/separator";
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
 import { AuthFlow } from "../types";
+import { toast } from "sonner";
 
 interface SignInCardProps {
   setAuthFlow: (authFlow: AuthFlow) => void;
@@ -22,9 +23,28 @@ const SignInCard = ({ setAuthFlow }: SignInCardProps) => {
   const { signIn } = useAuthActions();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [pending, setPending] = useState<boolean>(false);
+
+  const handlePasswordSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setPending(true);
+    signIn("password", { email, password, flow: "signIn" })
+      .catch((error) => {
+        console.error("Error signing in:", error);
+        toast.error(
+          "Error signing in. Please check your credentials and try again.",
+        );
+      })
+      .finally(() => {
+        setPending(false);
+      });
+  };
 
   const handleOAuthSignIn = async (provider: "google" | "github") => {
-    signIn(provider);
+    setPending(true);
+    signIn(provider).finally(() => {
+      setPending(false);
+    });
   };
 
   return (
@@ -36,9 +56,9 @@ const SignInCard = ({ setAuthFlow }: SignInCardProps) => {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-5 px-0 pb-0">
-        <form className="space-y-2.5">
+        <form onSubmit={handlePasswordSignIn} className="space-y-2.5">
           <Input
-            disabled={false}
+            disabled={pending}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Email"
@@ -46,14 +66,14 @@ const SignInCard = ({ setAuthFlow }: SignInCardProps) => {
             required
           />
           <Input
-            disabled={false}
+            disabled={pending}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Password"
             type="password"
             required
           />
-          <Button type="submit" className="w-full" size="lg" disabled={false}>
+          <Button type="submit" className="w-full" size="lg" disabled={pending}>
             Continue
           </Button>
         </form>
@@ -63,7 +83,7 @@ const SignInCard = ({ setAuthFlow }: SignInCardProps) => {
             type="submit"
             className="w-full relative"
             size="lg"
-            disabled={false}
+            disabled={pending}
             variant="outline"
             onClick={() => handleOAuthSignIn("google")}
           >
@@ -74,7 +94,7 @@ const SignInCard = ({ setAuthFlow }: SignInCardProps) => {
             type="submit"
             className="w-full relative"
             size="lg"
-            disabled={false}
+            disabled={pending}
             variant="outline"
             onClick={() => handleOAuthSignIn("github")}
           >
