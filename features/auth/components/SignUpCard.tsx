@@ -21,6 +21,8 @@ interface SignUpCardProps {
 
 const SignUpCard = ({ setAuthFlow }: SignUpCardProps) => {
   const { signIn } = useAuthActions();
+  
+  const [name, setName] = useState<string>("")
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
@@ -33,7 +35,7 @@ const SignUpCard = ({ setAuthFlow }: SignUpCardProps) => {
       return;
     }
     setPending(true);
-    signIn("password", { email, password, flow: "signUp" })
+    signIn("password", { name, email, password, flow: "signUp" })
       .catch((error) => {
         console.error("Error signing in:", error);
         toast.error(
@@ -63,6 +65,13 @@ const SignUpCard = ({ setAuthFlow }: SignUpCardProps) => {
       <CardContent className="space-y-5 px-0 pb-0">
         <form onSubmit={handlePasswordSignUp} className="space-y-2.5">
           <Input
+            disabled={pending}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Full Name"
+            required
+          />
+            <Input
             disabled={pending}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
